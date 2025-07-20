@@ -1,3 +1,38 @@
+// Function to save preferences to localStorage
+function savePreferences(timeOfDay, focusArea, timeAvailable, energyLevel, activities) {
+  const preferences = {
+    timeOfDay,
+    focusArea,
+    timeAvailable,
+    energyLevel,
+    activities
+  };
+  localStorage.setItem('routinePreferences', JSON.stringify(preferences));
+}
+
+// Function to load saved preferences
+function loadPreferences() {
+  const savedPreferences = localStorage.getItem('routinePreferences');
+  if (savedPreferences) {
+    const preferences = JSON.parse(savedPreferences);
+    
+    // Restore select input values
+    document.getElementById('timeOfDay').value = preferences.timeOfDay;
+    document.getElementById('focusArea').value = preferences.focusArea;
+    document.getElementById('timeAvailable').value = preferences.timeAvailable;
+    document.getElementById('energyLevel').value = preferences.energyLevel;
+    
+    // Restore checkbox values
+    const checkboxes = document.querySelectorAll('input[name="activities"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = preferences.activities.includes(checkbox.value);
+    });
+  }
+}
+
+// Load saved preferences when page loads
+document.addEventListener('DOMContentLoaded', loadPreferences);
+
 // Add an event listener to the form that runs when the form is submitted
 document.getElementById('routineForm').addEventListener('submit', async (e) => {
   // Prevent the form from refreshing the page
@@ -15,6 +50,9 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
   // Get all checked preferred activities
   const activityNodes = document.querySelectorAll('input[name="activities"]:checked');
   const preferredActivities = Array.from(activityNodes).map(cb => cb.value);
+
+  // Save preferences to localStorage
+  savePreferences(timeOfDay, focusArea, timeAvailable, energyLevel, preferredActivities);
 
   // Find the submit button and update its appearance to show loading state
   const button = document.querySelector('button[type="submit"]');
