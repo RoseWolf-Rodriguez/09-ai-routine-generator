@@ -3,8 +3,19 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
   // Prevent the form from refreshing the page
   e.preventDefault();
   
-  // TODO: Get values from all inputs and store them in variables
-  
+  // Get values from all inputs and store them in variables
+  // Get the selected time of day
+  const timeOfDay = document.getElementById('timeOfDay').value;
+  // Get the selected focus area
+  const focusArea = document.getElementById('focusArea').value;
+  // Get the selected time available
+  const timeAvailable = document.getElementById('timeAvailable').value;
+  // Get the selected energy level
+  const energyLevel = document.getElementById('energyLevel').value;
+  // Get all checked preferred activities
+  const activityNodes = document.querySelectorAll('input[name="activities"]:checked');
+  const preferredActivities = Array.from(activityNodes).map(cb => cb.value);
+
   // Find the submit button and update its appearance to show loading state
   const button = document.querySelector('button[type="submit"]');
   button.textContent = 'Generating...';
@@ -22,7 +33,16 @@ document.getElementById('routineForm').addEventListener('submit', async (e) => {
         model: 'gpt-4o',
         messages: [      
           { role: 'system', content: `You are a helpful assistant that creates quick, focused daily routines. Always keep routines short, realistic, and tailored to the user's preferences.` },
-          { role: 'user', content: '' }
+          { role: 'user', content: `Please create a structured, step-by-step routine for my ${timeOfDay.toLowerCase()} that focuses on ${focusArea.toLowerCase()}. 
+I have ${timeAvailable} minutes available and my energy level is ${energyLevel.toLowerCase()}.
+My preferred activities include: ${preferredActivities.join(', ')}.
+
+Please provide a clear, numbered routine that:
+1. Fits within the time limit
+2. Matches my energy level
+3. Incorporates my preferred activities where suitable
+4. Focuses on ${focusArea.toLowerCase()}
+5. Is appropriate for the ${timeOfDay.toLowerCase()}` }
         ],
         temperature: 0.7,
         max_completion_tokens: 500
